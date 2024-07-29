@@ -58,9 +58,81 @@ Here is my preference in Printing Settings:
 
 ### Step 2: Cleaning the support material
 Make sure that you remove carefully all of the support material from each part.
+| ![Case Part](/md_pictures/steps/step02/image00032.jpeg) | ![Lid Part](/md_pictures/steps/step02/image00033.jpeg) |
+| ------------------------------------------------------- | ------------------------------------------------------ |
 
 ### Step 3: Add User Interactive Parts
+#### Jack Plug
+Slide the Jack Plug in the slot shown in the pictures below. Use a ruler to align it with the outer surface. Use Super glue on around the plug to secure it in place
+| ![Case Part](/md_pictures/steps/step03/i/image00030.jpeg) | ![Lid Part](/md_pictures/steps/step03//i/image00031.jpeg) |
+| --------------------------------------------------------- | --------------------------------------------------------- |
+#### Buttons
+Then Slide the standard 16mm push buttons through the 2 middle holes of the Case.stl from top. Then fasten Them in place using the nuts that come in the package.\
 
-### Step 4: Add LCD Screen
+| ![Case Part](/md_pictures/steps/step03/ii/image00029.jpeg) | ![Lid Part](/md_pictures/steps/step03//ii/image00028.jpeg) |
+| ---------------------------------------------------------- | ---------------------------------------------------------- |
+
+<div style="padding: 15px; border: 1px solid transparent; border-color: transparent; margin-bottom: 20px; border-radius: 4px; color: #31708f; background-color: #d9edf7; border-color: #bce8f1;">
+Tip: Use a pair of pliers to tighten the nuts! 
+</div>
+
+#### Potentiometer 
+Place the B10k Potentiometer from the inside of the Case.stl and fasten it with the nut & washer that come in the package
+
+| ![Case Part](/md_pictures/steps/step03/iii/image00027.jpeg) | ![Lid Part](/md_pictures/steps/step03//iii/image00026.jpeg) |
+| ----------------------------------------------------------- | ----------------------------------------------------------- |
+
+<div style="padding: 15px; border: 1px solid transparent; border-color: transparent; margin-bottom: 20px; border-radius: 4px; color: #31708f; background-color: #d9edf7; border-color: #bce8f1;">
+Tip: Use a pair of pliers to tighten the nut!
+</div>
+
+### Step 4: Add solder to pins
+
+Add solder to all the pins of:
+- Jack Plug
+- Buttons
+- Potentiometer
+
+
+### Step 5: Prepare the LCD Screen
+#### Remove the headers fom the lcd module
+![Case Part](/md_pictures/steps/step05/i/image00024.jpeg)
+
+#### Strip and Solder Cables
+In his example I have used ribbon wire tap but feel free to use anything you want!
+| ![Case Part](/md_pictures/steps/step05/ii/image00023.jpeg) | ![Case Part](/md_pictures/steps/step05/ii/image00022.jpeg) |
+| ---------------------------------------------------------- | ---------------------------------------------------------- |
+
+<div style="padding: 15px; border: 1px solid transparent; border-color: transparent; margin-bottom: 20px; border-radius: 4px; color: #8a6d3b;; background-color: #fcf8e3; border-color: #faebcc;">
+Mark the GND wire with a marker! You wil thank me later. Of course colored cables are better.
+</div>
+
+#### Bend the wire like so
+![Case Part](/md_pictures/steps/step05/iii/image00021.jpeg)
+
+### Step 6: LCD Placement
+Prepare cut servo screw to 7mm in length.
+Finally we can place the LCD! Place the LCD like so and fasten it with the servo screws
+| ![Case Part](/md_pictures/steps/step06/image00020.jpeg) | ![Case Part](/md_pictures/steps/step06/image00019.jpeg) |
+| ------------------------------------------------------- | ------------------------------------------------------- |
+
+<div style="padding: 15px; border: 1px solid transparent; border-color: transparent; margin-bottom: 20px; border-radius: 4px; color: #a94442; background-color: #f2dede; border-color: #ebccd1;">
+Attention!!! Be careful of the screen's orientation. We don't want to flip the preview upside down!
+</div>
+
+### Step 7: Clean Separator.stl
+Use a 3mm drill and redrill the 4 holes of the Separator.stl
+![Case Part](/md_pictures/steps/step07/image00018.jpeg)
+
+### Step 8: Separator Placement
+Use 4 M3 8mm screws to secure the Separator.stl as shown below.
+![Case Part](/md_pictures/steps/step08/image00017.jpeg)
+
+<div style="padding: 15px; border: 1px solid transparent; border-color: transparent; margin-bottom: 20px; border-radius: 4px; color: #a94442; background-color: #f2dede; border-color: #ebccd1;">
+Attention!!! Don't forget to pass the cable through the slot!
+</div>
+
+### Step 9: Header Pins (Servo Output)
+
 
 # Under Construction...

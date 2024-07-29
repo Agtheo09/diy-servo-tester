@@ -4,7 +4,8 @@
 
 This Project was created to expand the use of servo tester along with challenging my creation skills! This Tester not only checks the life of a servo but also expands the variety of servo types to servos with a larger range of motion. This tester includes features such as 3 turning modes(position control, neutral, speed control swipe) for everyone's needs! The main reason I design it, is because I had trouble finding a servo tester that met te expectations of mine ; 300deg servos and turn percentage preview. I hope this helps you too!
 
-!!!PICTURES HERE!!!
+| ![CAD Image](/md_pictures/cad_full.png) | ![Physical Image](/md_pictures/physical_full.jpg) |
+| --------------------------------------- | ------------------------------------------------- |
 
 ## **Table of Contents**
 * [BOM List](#bom-list)
@@ -13,7 +14,7 @@ This Project was created to expand the use of servo tester along with challengin
 ## **BOM List**
 Here are the parts needed for this build!
 
-* 1x Arduino Nano
+* 1x Arduino Nano Type-C
 * 1x I2C LCD Screen 16X2
 * 2x Standard 16mm Pushbuttons
 * 1x Switch

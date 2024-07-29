@@ -17,7 +17,8 @@ Here are the parts needed for this build!
 * 1x I2C LCD Screen 16X2
 * 2x Standard 16mm Pushbuttons
 * 1x Switch
-* 1x B10k Potensiometer
+* 1x B10k Potentiometer
+* 2x 220 Ohm Resistors
 * 1x Jack Plug Input Connector
 * 6x Male Header Pins (3 in use, keep backup)
 * 6x M3 6mm Screws
@@ -40,7 +41,7 @@ Here is my preference in Printing Settings:
 * Infill: 60%
 * Perimeters: 3
 * No brim or Raft
-* Use Supports (Case.stl, Lid.stl)
+* Use Supports (Case.stl, Lid.stl, Knob.stl)
 * Don't Use Supports (Separator.stl, Seamer.stl)
 
 
@@ -49,6 +50,8 @@ Here is my preference in Printing Settings:
 | Case.stl                                           | Lid.stl                                      |
 | ![Separator Part](/md_pictures/separator_only.png) | ![Seamer Part](/md_pictures/seamer_only.png) |
 | Separator.stl                                      | Seamer.stl                                   |
+| ![Knob Part](/md_pictures/knob_only.png)           |                                              |
+| Knob.stl                                           |
 
 (Note: Use the orientation of the default stl file. These pictures are only demonstrative)
 

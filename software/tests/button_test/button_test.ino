@@ -4,10 +4,10 @@
 // Right Button: 3 (D3)
 
 void setup() {
-  pinMode(3, INPUT_PULLUP);
+  pinMode(4, INPUT_PULLUP);
   Serial.begin(9600);
 }
 
 void loop() {
-  Serial.println(digitalRead(3));
+  Serial.println(digitalRead(4));
 }

@@ -133,6 +133,45 @@ Attention!!! Don't forget to pass the cable through the slot!
 </div>
 
 ### Step 9: Header Pins (Servo Output)
+Get some male header pins and snap a triplet of. The sort side of the pins have to be from the inner side of the Case.stl. It's supposed to be press fit, but i suggest you use super glue for best security!
 
+| ![Case Part](/md_pictures/steps/step09/image00016.jpeg) | ![Case Part](/md_pictures/steps/step09/image00015.jpeg) |
+| ------------------------------------------------------- | ------------------------------------------------------- |
+
+<div style="padding: 15px; border: 1px solid transparent; border-color: transparent; margin-bottom: 20px; border-radius: 4px; color: #31708f; background-color: #d9edf7; border-color: #bce8f1;">
+Tip: Before glueing the pins in place connect a servo from the outer side of the Case.stl. In this way the pins are going to be perfectly aligned!
+</div>
+
+### Step 10: Solder to the Header Pins (Servo Output)
+Add some solder to each of the 3 pins to prepare them for later.
+
+![Case Part](/md_pictures/steps/step10/image00016.jpeg)
+
+<div style="padding: 15px; border: 1px solid transparent; border-color: transparent; margin-bottom: 20px; border-radius: 4px; color: #a94442; background-color: #f2dede; border-color: #ebccd1;">
+Attention!!! Don't overheat the pins with your iron because they might dislocate!
+</div>
+
+### Step 11: Nano Placement
+Cut a servo screw to 5mm in length
+Slide the nano in the slot of the Case.stl. Slide it all the way and secure it with the servo screw along with the Seamer.stl. Use the picture for guidance!
+
+![Case Part](/md_pictures/steps/step11/image00014.jpeg)
+
+### Step 12: Push Button GND
+Now we connect the GND to the push button. Use 12cm cable (around 26-28AWG) to connect it to one of the terminals of the pushbutton.
+
+The push buttons are configured as INPUT_PULLUP. Chech more for INPUT_PULLUP [here](https://www.arduino.cc/reference/en/language/variables/constants/inputoutputpullup/)!
+
+![Case Part](/md_pictures/steps/step10/image00016.jpeg)
+
+<div style="padding: 15px; border: 1px solid transparent; border-color: transparent; margin-bottom: 20px; border-radius: 4px; color: #31708f; background-color: #d9edf7; border-color: #bce8f1;">
+<p>Info: If you have illuminated push-buttons instead of just connecting one of the terminals with a GND wire, you should bridge the LED (-) and one of the terminals with the GND wire, just like in my example!</p>
+
+<p>I prefer the LED of the button to be always on (this tutorial follows that concept). But feel free to use any of the 2 scenarios in the schematic below!</p>
+
+![LED Pushbutton Wiring](/hardware/led_pushbutton_wiring.webp)
+
+(credits to reddit's "r/electrical" the post is [here]([text](https://www.reddit.com/r/electrical/comments/xo9q7q/led_button_wiring_help/?rdt=50037&onetap_auto=true&one_tap=true)))
+</div>
 
 # Under Construction...

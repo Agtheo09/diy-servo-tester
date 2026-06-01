@@ -8,7 +8,7 @@
 * [Troubleshooting](#troubleshooting)
 
 ## **Summary**
-This Project was created to expand the use of servo tester along with challenging my creation skills! This Tester not only checks the life of a servo but also expands the variety of servo types to servos with a larger range of motion. This tester includes features such as 3 turning modes(position control, neutral, speed control swipe) for everyone's needs! The main reason I design it, is because I had trouble finding a servo tester that met te expectations of mine ; 300deg servos and turn percentage preview. I hope this helps you too!
+This Project was created to expand the use of servo tester along with challenging my creation skills! This Tester not only checks the life of a servo but also expands the variety of servo types to servos with a larger range of motion. This tester includes features such as 3 turning modes(position control, neutral, speed control swipe) for everyone's needs! The main reason I designed it, is because I had trouble finding a servo tester that met my expectations; 300deg servos and turn percentage preview. I hope this helps you too!
 
 | ![CAD Image](/md_pictures/cad_full.png) | ![Physical Image](/md_pictures/physical_full.jpg) |
 | --------------------------------------- | ------------------------------------------------- |
@@ -66,11 +66,11 @@ Make sure that you remove carefully all of the support material from each part.
 
 ### Step 3: Add User Interactive Parts
 #### Jack Plug
-Slide the Jack Plug in the slot shown in the pictures below. Use a ruler to align it with the outer surface. Use Super glue on around the plug to secure it in place
+Slide the Jack Plug in the slot shown in the pictures below. Use a ruler to align it with the outer surface. Use Super glue on around the plug to secure it in place.
 | ![Case Part](/md_pictures/steps/step03/i/image00030.jpeg) | ![Lid Part](/md_pictures/steps/step03//i/image00031.jpeg) |
 | --------------------------------------------------------- | --------------------------------------------------------- |
 #### Buttons
-Then Slide the standard 16mm push buttons through the 2 middle holes of the Case.stl from top. Then fasten Them in place using the nuts that come in the package.\
+Then Slide the standard 16mm push buttons through the 2 middle holes of the Case.stl from top. Then fasten Them in place using the nuts that come in the package.
 
 | ![Case Part](/md_pictures/steps/step03/ii/image00029.jpeg) | ![Lid Part](/md_pictures/steps/step03//ii/image00028.jpeg) |
 | ---------------------------------------------------------- | ---------------------------------------------------------- |
@@ -80,7 +80,7 @@ Tip: Use a pair of pliers to tighten the nuts!
 </div>
 
 #### Potentiometer 
-Place the B10k Potentiometer from the inside of the Case.stl and fasten it with the nut & washer that come in the package
+Place the B10k Potentiometer from the inside of the Case.stl and fasten it with the nut & washer that come in the package.
 
 | ![Case Part](/md_pictures/steps/step03/iii/image00027.jpeg) | ![Lid Part](/md_pictures/steps/step03//iii/image00026.jpeg) |
 | ----------------------------------------------------------- | ----------------------------------------------------------- |
@@ -115,16 +115,16 @@ Mark the GND wire with a marker! You wil thank me later. Of course colored cable
 
 ### Step 6: LCD Placement
 Prepare cut servo screw to 7mm in length.
-Finally we can place the LCD! Place the LCD like so and fasten it with the servo screws
+Finally we can place the LCD! Place the LCD like so and fasten it with the servo screws.
 | ![Case Part](/md_pictures/steps/step06/image00020.jpeg) | ![Case Part](/md_pictures/steps/step06/image00019.jpeg) |
 | ------------------------------------------------------- | ------------------------------------------------------- |
 
 <div style="padding: 15px; border: 1px solid transparent; border-color: transparent; margin-bottom: 20px; border-radius: 4px; color: #a94442; background-color: #f2dede; border-color: #ebccd1;">
-Attention!!! Be careful of the screen's orientation. We don't want to flip the preview upside down!
+Attention!!! Be careful of the screen's orientation. We don't want the preview to be upside down!
 </div>
 
 ### Step 7: Clean Separator.stl
-Use a 3mm drill and redrill the 4 holes of the Separator.stl
+Use a 3mm drill and redrill the 4 holes of the Separator.stl.
 ![Case Part](/md_pictures/steps/step07/image00018.jpeg)
 
 ### Step 8: Separator Placement
@@ -178,13 +178,13 @@ The push buttons are configured as INPUT_PULLUP. Chech more for INPUT_PULLUP [he
 </div>
 
 ### Step 13: Switch Connection
-Connect the (+) terminal of the Jack Plug Connector to one of the terminals of the switch. Use 20-22 AWG Wire for the purpose
+Connect the (+) terminal of the Jack Plug Connector to one of the terminals of the switch. Use 20-22 AWG Wire for this purpose.
 
 ![Switch Wiring](/md_pictures/steps/step13/image00011.jpeg)
 
 
 ### Step 14: Header Pins Connection
-get an old servo cable or make your own. Split the wires a bit and add solder to the ends. Connect the triplet to the headers and use some heatshrink if you like. Now split the triplet, power wires and signal wire, like shown. Run the power wires through the back and the signal towards the nano. Trim and solder the signal to A2 port on the nano.
+Grab an old servo cable or make your own. Split the wires a bit and add solder to the ends. Connect the triplet to the headers and use some heatshrink if you like. Now split the triplet, power wires and signal wire, like shown. Run the power wires through the back and the signal towards the nano. Trim and solder the signal to A2 port on the nano.
 
 | ![Switch Wiring](/md_pictures/steps/step14/i/image00010.jpeg) | ![Switch Wiring](/md_pictures/steps/step14/ii/image00009.jpeg) |
 | ------------------------------------------------------------- | -------------------------------------------------------------- |
@@ -195,7 +195,7 @@ Attention!!! Don't solder the power wires just yet!
 </div>
 
 ### Step 15: Nano Power Supply Connection
-get an old servo triplet cable or make your own. Completely split the wires into the power cables (-, +) and the signal one (keep the signal for later). Connect the power cables in parallel with the ones from the header pins (heatshrink here!). Then connect the (+) to the NO terminal of the switch and the (-) to the (-) terminal of the jack plug. Then connect the nano power supply cable by connecting the source's (+) to Vin port and (-) to Any GND Port.
+Grab an old servo triplet cable or make your own. Completely split the wires into the power cables (-, +) and the signal one (keep the signal for later). Connect the power cables in parallel with the ones from the header pins (heatshrink here!). Then connect the (+) to the NO terminal of the switch and the (-) to the (-) terminal of the jack plug. Then connect the nano power supply cable by connecting the source's (+) to Vin port and (-) to Any GND Port.
 
 | ![Switch Wiring](/md_pictures/steps/step15/i/image00007.jpeg) | ![Switch Wiring](/md_pictures/steps/step15/ii/image00006.jpeg) |
 | ------------------------------------------------------------- | -------------------------------------------------------------- |
@@ -214,7 +214,7 @@ Use the signal wire that you kept from step 15 to connect the middle terminal of
 
 ![Switch Wiring](/md_pictures/steps/step17/i/image00003.jpeg)
 
-The connect to the other terminals to pieces of 10cm wire for (-) and (+).
+Then connect to the other terminals to pieces of 10cm wire for (-) and (+).
 
 ### Step 18: Powering Components
 Merge all the (-) into one cable and all the (+) into another of the following components:
@@ -229,7 +229,7 @@ Use headshrink!
 </div>
 
 ### Step 19: Powering Cables to Nano
-The 2 wires from step 15 (-, +) trim them and connect them to GND and 5V on the nano respectively
+The 2 wires from step 15 (-, +) trim them and connect them to GND and 5V on the nano respectively.
 
 ### Step 20: LCD Communication Wires
 Connect the LCD's SDA cable to A4 port on the nano and the SCK to A5.
@@ -276,11 +276,11 @@ For the program to run you need to install the LiquidCrystal_I2C.h library. Sour
 
 Credits to: fdebrabander and João Pedro São Gregorio Silva for the library
 
-### Step 27: Upload program on the Nano
+### Step 28: Upload program on the Nano
 
-Get the code from [here](https://github.com/Agtheo09/diy-servo-tester/blob/main/software/main/main.ino) and upload it to the nano using the IDE of you choice! There are plenty of tutorial for how to do it. Make sure that you select the correct board type (Arduino Nano) and COM port!
+Get the code from [here](https://github.com/Agtheo09/diy-servo-tester/blob/main/software/main/main.ino) and upload it to the Nano using the IDE of your choice! There are plenty of tutorial on how to do it. Ensure you select the correct board type (Arduino Nano) and COM port!
 
-### Step 28: Admiring the Beauty!
+### Step 29: Admiring the Beauty!
 **Look at this......**
 ![Physical Image](/md_pictures/physical_full.jpg)
 
@@ -303,6 +303,8 @@ Get the code from [here](https://github.com/Agtheo09/diy-servo-tester/blob/main/
 
 I have a series of tests in [this folder](https://github.com/Agtheo09/diy-servo-tester/tree/main/software/tests). Use them to identify the problem! And feel free to reach me out on [printables](https://www.printables.com/@AggelosTheod_1409282)!
 
-- button_test → Prints if the button on the port specified on line 1 in pressed or not in serial monitor
+- button_test → Prints if the button on the port specified on line 1 is pressed or not in the serial monitor
+
 - lcd_test → Prints on Screen on the first line "Hello!" and of the Second "Servo Tester" (check the lcd address and change it if necessary on line 4)
+
 - potentiometer_test → Prints the value of the potentiometer in serial. [0, 1024)

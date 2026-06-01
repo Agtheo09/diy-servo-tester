@@ -1,7 +1,7 @@
 #include <LiquidCrystal_I2C.h>
 
 // Set the LCD address to your lcd's one! Use an I2c address ester to identify it!
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+LiquidCrystal_I2C lcd(0x3E, 16, 2);
 
 void setup()
 {

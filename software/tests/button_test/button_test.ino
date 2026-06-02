@@ -1,13 +1,18 @@
-#define btn_pin 7 // D4
+#define btn_pin 7
 
-// Left Button: 4 (D4)
-// Right Button: 3 (D3)
-
-void setup() {
+void setup()
+{
   pinMode(4, INPUT_PULLUP);
+  // Initialize Serial Monitor for testing
   Serial.begin(9600);
+  while (!Serial)
+  {
+    ;
+  }
+  Serial.println("--- Controls Test: Button ---");
 }
 
-void loop() {
+void loop()
+{
   Serial.println(digitalRead(4));
 }

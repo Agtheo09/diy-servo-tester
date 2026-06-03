@@ -1,63 +1,48 @@
 #include <Servo.h>
+#include "Button.h"
+#include "BatteryMonitor.h"
+#include "ServoController.h"
 
-// --------------------------- Pins --------------------------- //
 #define ENCODER_CLK_PIN 2
 #define ENCODER_DT_PIN 3
 #define ENCODER_SW_PIN A0
-
 #define BUTTON_1_PIN A1
 #define BUTTON_2_PIN A2
 #define BUTTON_3_PIN A3
-
 #define BUZZER_PIN 4
-
 #define SERVO_1_PIN 5
 #define SERVO_2_PIN 6
-
 #define VOLTAGE_PIN A7
 
-// ------------------------- Hardware ------------------------- //
-Servo servo1, servo2;
+Button button1(BUTTON_1_PIN);
+Button button2(BUTTON_2_PIN);
+Button button3(BUTTON_3_PIN);
+Button encoderSwitch(ENCODER_SW_PIN);
+BatteryMonitor battery(VOLTAGE_PIN, 300);
+ServoController myServo1(SERVO_1_PIN, 540, 2200);
+ServoController myServo2(SERVO_2_PIN, 540, 2200);
 
-// ------------------------ Variables ------------------------- //
-int servoType = 0;     // 0: 180deg, 1: 300deg
-int rotation_mode = 0; // 0: Position, 1: Neutral, 2: Swiping
-int min_pulse = 540;   // microseconds
-int max_pulse = 2200;  // microseconds
-
-// -------------------------- Utils --------------------------- //
-bool last_button_1_state = HIGH;
-bool last_button_2_state = HIGH;
-bool last_button_3_state = HIGH;
-bool last_button_rot_state = HIGH;
-
+const int ENCODER_STEP = 2;
 volatile int encoderValue = 50;
-int ENCODER_STEP = 2;
-int lastEncoderValue = -1;
-
-unsigned long lastBatteryCheck = 0;
-const unsigned long batteryInterval = 300;
-
-int rawAnalog = 0;
-float pinVoltage = 0.0;
-float batteryVoltage = 0.0;
+int currentGlobalMode = 0;
 
 void setup()
 {
   Serial.begin(9600);
-  Serial.println("Waiting for Serial to INIT...");
   while (!Serial)
     delay(10);
   Serial.println("Serial Init Successful!");
 
-  servo1.attach(SERVO_1_PIN);
-  servo2.attach(SERVO_2_PIN);
+  button1.init();
+  button2.init();
+  button3.init();
+  encoderSwitch.init();
+  battery.init();
+  myServo1.init();
+  myServo2.init();
 
   pinMode(ENCODER_CLK_PIN, INPUT_PULLUP);
   pinMode(ENCODER_DT_PIN, INPUT_PULLUP);
-  pinMode(ENCODER_SW_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_1_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_2_PIN, INPUT_PULLUP);
   pinMode(BUZZER_PIN, OUTPUT);
 
   attachInterrupt(digitalPinToInterrupt(ENCODER_CLK_PIN), readEncoder, CHANGE);
@@ -66,51 +51,41 @@ void setup()
 
 void loop()
 {
-  if (digitalRead(BUTTON_1_PIN) == LOW && last_button_1_state == HIGH)
+  if (button1.isPressed())
   {
     encoderValue = 0;
     beep();
   }
 
-  if (digitalRead(BUTTON_2_PIN) == LOW && last_button_2_state == HIGH)
+  if (button2.isPressed())
   {
     encoderValue = 100;
     beep();
   }
 
-  if (digitalRead(BUTTON_3_PIN) == LOW && last_button_3_state == HIGH)
+  if (button3.isPressed())
   {
-    delay(10);
+    currentGlobalMode++;
+    if (currentGlobalMode > 2)
+      currentGlobalMode = 0;
+    myServo1.setMode(currentGlobalMode);
+    myServo2.setMode(currentGlobalMode);
+    beep();
+    delay(50);
+    beep();
   }
 
-  if (digitalRead(ENCODER_SW_PIN) == LOW && last_button_rot_state == HIGH)
+  if (encoderSwitch.isPressed())
   {
     encoderValue = 50;
     beep();
   }
 
-  last_button_1_state = digitalRead(BUTTON_1_PIN);
-  last_button_2_state = digitalRead(BUTTON_2_PIN);
-  last_button_3_state = digitalRead(BUTTON_3_PIN);
-  last_button_rot_state = digitalRead(ENCODER_SW_PIN);
+  battery.update();
+  myServo1.update(encoderValue);
+  myServo2.update(encoderValue);
 
-  servo1.writeMicroseconds(map(encoderValue, 0, 100, min_pulse, max_pulse));
-  servo2.writeMicroseconds(map(encoderValue, 0, 100, min_pulse, max_pulse));
-
-  if (millis() - lastBatteryCheck >= batteryInterval)
-  {
-
-    int rawAnalog = analogRead(VOLTAGE_PIN);
-    float pinVoltage = rawAnalog * (5.0 / 1023.0);
-    batteryVoltage = pinVoltage * 11.0;
-    lastBatteryCheck = millis();
-  }
-
-  // --------------------------- Telemetry --------------------------- //
-  Serial.print("Voltage: ");
-  Serial.print(batteryVoltage, 2);
-  Serial.print("V | Counter Value: ");
-  Serial.println(encoderValue);
+  printTelemetry();
 }
 
 void beep()
@@ -118,6 +93,16 @@ void beep()
   digitalWrite(BUZZER_PIN, HIGH);
   delay(30);
   digitalWrite(BUZZER_PIN, LOW);
+}
+
+void printTelemetry()
+{
+  Serial.print("Voltage: ");
+  Serial.print(battery.getVoltage(), 2);
+  Serial.print("V | Mode: ");
+  Serial.print(currentGlobalMode);
+  Serial.print(" | Counter Value: ");
+  Serial.println(encoderValue);
 }
 
 void readEncoder()

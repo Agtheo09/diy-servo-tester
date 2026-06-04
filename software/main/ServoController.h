@@ -25,6 +25,7 @@ public:
     void setMode(int newMode);
     int getMode();
     void update(int encoderValue); // Core logic ran every frame
+    void setPulseRange(int minP, int maxP);
 };
 
 #endif

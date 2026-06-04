@@ -25,6 +25,13 @@ void ServoController::setMode(int newMode)
     }
 }
 
+void ServoController::setPulseRange(int minP, int maxP)
+{
+    minPulse = minP;
+    maxPulse = maxP;
+    currentPulse = (minP + maxP) / 2; // Recenter the servo safely
+}
+
 int ServoController::getMode()
 {
     return mode;

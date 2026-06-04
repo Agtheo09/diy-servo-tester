@@ -37,7 +37,6 @@ void setup()
   button2.init();
   button3.init();
   encoderSwitch.init();
-  battery.init();
   myServo1.init();
   myServo2.init();
 

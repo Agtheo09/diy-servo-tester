@@ -8,24 +8,30 @@ class DisplayManager {
 private:
     Adafruit_ILI9341 tft;
     int blPin;
-
-    // Cache states to avoid screen flickering
+    
     int lastPercent;
     int lastMode;
     float lastVoltage;
     int lastHighlightedRow;
     int lastInputType;
     int lastServoRange;
+    int lastTestSelectionRow;
+    
+    // NEW: Added tracking parameters for cell setups and context-layout states
+    int lastCellCount;
+    int lastLayoutMode;
 
-    // Both private and public layouts must accept systemState
-    void drawStaticTestLayout(int servoRange, int systemState); 
     void drawStaticMenuLayout();
+    void drawStaticTestSelectionLayout();
+    void drawStaticTestLayout(int servoRange, int systemState);
 
 public:
     DisplayManager(int csPin, int dcPin, int rstPin, int blPin);
     void init();
     void clearScreen();
-    void updateMenu(int highlightedRow, int inputType, int servoRange);
+    // UPDATED signature footprint to pass cellCount
+    void updateMenu(int highlightedRow, int inputType, int cellCount, int servoRange, int outputCount);
+    void updateTestSelectionMenu(int highlightedRow);
     void updateTestScreen(int encoderValue, int currentMode, float batteryVoltage, int servoRange, int systemState);
 };
 

@@ -4,6 +4,8 @@
 #include "ServoController.h"
 #include "DisplayManager.h"
 
+#define DEBUG_TELEMETRY 1 
+
 #define ENCODER_CLK_PIN 2
 #define ENCODER_DT_PIN 3
 #define ENCODER_SW_PIN A0
@@ -24,17 +26,20 @@ Button button1(BUTTON_1_PIN);
 Button button2(BUTTON_2_PIN);
 Button button3(BUTTON_3_PIN);
 Button encoderSwitch(ENCODER_SW_PIN);
-BatteryMonitor battery(VOLTAGE_PIN, 300);
+BatteryMonitor battery(VOLTAGE_PIN, 300, 0.08); 
 ServoController myServo1(SERVO_1_PIN, 540, 2200);
 ServoController myServo2(SERVO_2_PIN, 540, 2200);
 DisplayManager display(TFT_CS, TFT_DC, TFT_RST, TFT_BL);
 
-enum SystemState { INIT_MENU, MANUAL_POSITION, NEUTRAL_POSITION, VELOCITY_TEST };
+enum SystemState { INIT_MENU, TEST_SELECTION_MENU, MANUAL_POSITION, NEUTRAL_POSITION, VELOCITY_TEST, STAMPS };
 SystemState currentSystemState = INIT_MENU;
 
-int activeMenuRow = 0;   
-int configInputType = 0; 
+int activeMenuRow = 0;       
+int activeTestMenuRow = 0;   
+int configInputType = 0;   // 0=PWR SUP, 1=LiPo, 2=NiMH
+int configCellCount = 0;   
 int configServoRange = 0; 
+int configOutputCount = 1; 
 
 const int ENCODER_STEP = 2;
 int encoderValue = 50;    
@@ -42,14 +47,15 @@ int currentGlobalMode = 0;
 
 volatile int encoderDelta = 0; 
 
-// --- VELOCITY SELECTION ENGINE VARIABLES ---
 static float sweepValue = 0.0;
 static int sweepDirection = 1;
 static unsigned long lastSweepTick = 0;
 
 void setup()
 {
-  Serial.begin(9600);
+  #if DEBUG_TELEMETRY
+    Serial.begin(9600);
+  #endif
   
   button1.init();
   button2.init();
@@ -75,24 +81,51 @@ void loop()
 
   if (currentSystemState == INIT_MENU) 
   {
+    // The menu layout grid is now permanently locked to 4 setting options + button (Max index 4)
     if (delta != 0) {
-      if (delta > 0) activeMenuRow++;
-      else           activeMenuRow--;
-      
-      if (activeMenuRow > 2) activeMenuRow = 2;
+      if (delta > 0) {
+        activeMenuRow++;
+        // SMART SKIP: If power supply is active, jump straight over Cell Count to Servo Range
+        if (configInputType == 0 && activeMenuRow == 1) activeMenuRow = 2;
+      } else {
+        activeMenuRow--;
+        // SMART SKIP: If power supply is active, jump straight up past Cell Count to Input Source
+        if (configInputType == 0 && activeMenuRow == 1) activeMenuRow = 0;
+      }
+      if (activeMenuRow > 4) activeMenuRow = 4;
       if (activeMenuRow < 0) activeMenuRow = 0;
     }
 
     if (encoderSwitch.isPressed()) {
-      if (activeMenuRow == 0) {
-        configInputType = !configInputType; 
+      
+      if (activeMenuRow == 0) { 
+        configInputType++;
+        if (configInputType > 2) configInputType = 0;
+        
+        if (configInputType == 1)      configCellCount = 2; 
+        else if (configInputType == 2) configCellCount = 6; 
+        else                           configCellCount = 0;
         beep(); 
       } 
-      else if (activeMenuRow == 1) {
+      else if (activeMenuRow == 1) { 
+        if (configInputType == 1) { 
+          configCellCount = (configCellCount == 2) ? 3 : 2;
+        } 
+        else if (configInputType == 2) { 
+          configCellCount++;
+          if (configCellCount > 10) configCellCount = 6;
+        }
+        beep();
+      }
+      else if (activeMenuRow == 2) { 
         configServoRange = !configServoRange; 
         beep(); 
       } 
-      else if (activeMenuRow == 2) {
+      else if (activeMenuRow == 3) { 
+        configOutputCount = !configOutputCount;
+        beep();
+      }
+      else if (activeMenuRow == 4) { // Executing test from locked row index 4
         beep(); delay(60); beep();
         
         if (configServoRange == 0) {
@@ -103,23 +136,56 @@ void loop()
           myServo2.setPulseRange(500, 2500);
         }
 
-        myServo1.init();
-        myServo2.init();
-
         display.clearScreen(); 
-        encoderValue = 50; 
-        currentSystemState = MANUAL_POSITION;
+        activeTestMenuRow = 0;
+        currentSystemState = TEST_SELECTION_MENU;
         return;
       }
     }
-    
-    display.updateMenu(activeMenuRow, configInputType, configServoRange);
+    display.updateMenu(activeMenuRow, configInputType, configCellCount, configServoRange, configOutputCount);
   } 
+  else if (currentSystemState == TEST_SELECTION_MENU)
+  {
+    if (delta != 0) {
+      if (delta > 0) activeTestMenuRow++;
+      else           activeTestMenuRow--;
+      if (activeTestMenuRow > 3) activeTestMenuRow = 3;
+      if (activeTestMenuRow < 0) activeTestMenuRow = 0;
+    }
+
+    if (encoderSwitch.isPressed()) {
+      beep(); delay(60); beep();
+      display.clearScreen();
+
+      myServo1.init();
+      if (configOutputCount == 1) {
+        myServo2.init();
+      }
+
+      if (activeTestMenuRow == 0) {
+        currentSystemState = MANUAL_POSITION;
+        encoderValue = 50; 
+      } 
+      else if (activeTestMenuRow == 1) {
+        currentSystemState = NEUTRAL_POSITION;
+        encoderValue = 50; 
+      } 
+      else if (activeTestMenuRow == 2) {
+        currentSystemState = VELOCITY_TEST;
+        encoderValue = 25; 
+        sweepValue = 0.0;
+        sweepDirection = 1;
+      }
+      else if (activeTestMenuRow == 3) {
+        currentSystemState = STAMPS;
+        encoderValue = 50;
+      }
+      return;
+    }
+    display.updateTestSelectionMenu(activeTestMenuRow);
+  }
   else 
   {
-    // ----------------------------------------------------
-    // SYSTEM NAVIGATION MATRIX
-    // ----------------------------------------------------
     static unsigned long buttonTimer = 0;
     static bool buttonActive = false;
     static bool longPressTriggered = false;
@@ -130,20 +196,11 @@ void loop()
         buttonTimer = millis();
         longPressTriggered = false;
       } 
-      else if (!longPressTriggered && (millis() - buttonTimer > 800)) {
+      else if (!longPressTriggered && (millis() - buttonTimer > 400)) {
         longPressTriggered = true;
         
-        if (currentSystemState == MANUAL_POSITION) {
-          currentSystemState = NEUTRAL_POSITION;
-        } else if (currentSystemState == NEUTRAL_POSITION) {
-          currentSystemState = VELOCITY_TEST;
-          encoderValue = 25; 
-          sweepValue = 0.0;
-          sweepDirection = 1;
-        } else if (currentSystemState == VELOCITY_TEST) {
-          currentSystemState = MANUAL_POSITION;
-          encoderValue = 50; 
-        }
+        currentSystemState = TEST_SELECTION_MENU;
+        activeTestMenuRow = 0; 
 
         beep(); delay(60); beep(); 
         display.clearScreen();
@@ -154,21 +211,20 @@ void loop()
       if (buttonActive) {
         buttonActive = false;
         if (!longPressTriggered) {
-          if (currentSystemState == MANUAL_POSITION) {
+          if (currentSystemState == MANUAL_POSITION || currentSystemState == STAMPS) {
             encoderValue = 50;
             beep();
           } else if (currentSystemState == VELOCITY_TEST) {
-            encoderValue = 0; // Quick Brake Stop
+            encoderValue = 0; 
             beep();
           }
         }
       }
     }
 
-    // --- STATE UPDATE DRIVERS ---
     int servoOutputValue = 50;
 
-    if (currentSystemState == MANUAL_POSITION) 
+    if (currentSystemState == MANUAL_POSITION || currentSystemState == STAMPS) 
     {
       if (delta != 0) encoderValue += (delta * ENCODER_STEP);
       if (encoderValue > 100) encoderValue = 100;
@@ -194,29 +250,16 @@ void loop()
       if (button2.isPressed()) { encoderValue = 100; beep(); } 
 
       if (encoderValue > 0) {
-        // Run updates on a rock-solid physical frame-rate interval
         if (millis() - lastSweepTick >= 15) {
           lastSweepTick = millis();
           
-          // RECALIBRATED CORRECTION:
-          // Changed scaler multiplier from 0.08 down to 0.03.
-          // At 100% speed knob setting, stepSize is now exactly 3.0.
-          // 100% travel / 3.0 stepSize = 33 frames * 15ms = ~500ms full sweep.
-          // This allows your 270-degree physical servo to perfectly match the software signal!
           float stepSize = (float)encoderValue * 0.03;
           if (stepSize < 0.05) stepSize = 0.05; 
 
           sweepValue += ((float)sweepDirection * stepSize);
           
-          // Pure directional boundary checks without time-based buffers
-          if (sweepValue >= 100.0) { 
-            sweepValue = 100.0; 
-            sweepDirection = -1; 
-          }
-          else if (sweepValue <= 0.0) { 
-            sweepValue = 0.0; 
-            sweepDirection = 1; 
-          }
+          if (sweepValue >= 100.0) { sweepValue = 100.0; sweepDirection = -1; }
+          else if (sweepValue <= 0.0) { sweepValue = 0.0; sweepDirection = 1; }
         }
       }
       servoOutputValue = (int)sweepValue;
@@ -226,15 +269,20 @@ void loop()
       currentGlobalMode++;
       if (currentGlobalMode > 2) currentGlobalMode = 0;
       myServo1.setMode(currentGlobalMode);
-      myServo2.setMode(currentGlobalMode);
+      if (configOutputCount == 1) myServo2.setMode(currentGlobalMode);
       beep(); delay(50); beep();
     }
 
     myServo1.update(servoOutputValue);
-    myServo2.update(servoOutputValue);
+    if (configOutputCount == 1) {
+      myServo2.update(servoOutputValue);
+    }
 
     display.updateTestScreen(encoderValue, currentGlobalMode, battery.getVoltage(), configServoRange, (int)currentSystemState);
-    printTelemetry();
+    
+    #if DEBUG_TELEMETRY
+      printTelemetry();
+    #endif
   }
 }
 
@@ -247,12 +295,14 @@ void beep()
 
 void printTelemetry()
 {
-  Serial.print("Voltage: ");
-  Serial.print(battery.getVoltage(), 2);
-  Serial.print("V | State Index: ");
-  Serial.print(currentSystemState);
-  Serial.print(" | Dial Metric: ");
-  Serial.println(encoderValue);
+  #if DEBUG_TELEMETRY
+    Serial.print("V: ");
+    Serial.print(battery.getVoltage(), 2);
+    Serial.print(" | S: ");
+    Serial.print(currentSystemState);
+    Serial.print(" | E: ");
+    Serial.println(encoderValue);
+  #endif
 }
 
 void readEncoder()

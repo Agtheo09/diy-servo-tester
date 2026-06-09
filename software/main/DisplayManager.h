@@ -4,11 +4,12 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
 
-class DisplayManager {
+class DisplayManager
+{
 private:
     Adafruit_ILI9341 tft;
     int blPin;
-    
+
     int lastPercent;
     int lastMode;
     float lastVoltage;
@@ -16,8 +17,7 @@ private:
     int lastInputType;
     int lastServoRange;
     int lastTestSelectionRow;
-    
-    // NEW: Added tracking parameters for cell setups and context-layout states
+    int lastOutputCount;
     int lastCellCount;
     int lastLayoutMode;
 

@@ -5,6 +5,8 @@
 [![PCB Size](https://img.shields.io/badge/PCB%20Size-sub--80mm-blue.svg)]()
 [![Cost](https://img.shields.io/badge/Cost-Sub--%E2%82%AC40-orange.svg)]()
 
+![Ultimate Servo Tester V3](/md_pictures/V3/hero-servotester-v3.jpg)
+
 The **Ultimate Servo Tester V3** is a high-performance, open-source diagnostic instrument designed for makers, engineers, and robotics competitors. Driven by an Arduino Nano, this project represents a complete hardware overhaul focused on field durability, universal power handling, zero-latency graphical visualization, and dual-stage circuit protection.
 
 Unlike standard commercial testers that only verify position, the V3 variant introduces advanced **Velocity Profiling** and a **Mechanical Boundary Capture Routine** to safely test linkages without risking physical damage or structural binding.

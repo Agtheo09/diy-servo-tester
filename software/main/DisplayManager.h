@@ -23,7 +23,7 @@ private:
 
     void drawStaticMenuLayout();
     void drawStaticTestSelectionLayout();
-    void drawStaticTestLayout(int servoRange, int systemState);
+    void drawStaticTestLayout(int servoRange, int systemState, int currentMode = 0);
 
 public:
     DisplayManager(int csPin, int dcPin, int rstPin, int blPin);

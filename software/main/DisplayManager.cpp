@@ -23,7 +23,7 @@ void DisplayManager::init()
     digitalWrite(blPin, HIGH);
 
     tft.begin();
-    tft.setRotation(3);
+    tft.setRotation(1); 
     tft.fillScreen(ILI9341_BLACK);
     delay(50);
 }
@@ -69,24 +69,24 @@ void DisplayManager::updateMenu(int highlightedRow, int inputType, int cellCount
     // Step 1: Render background base layout frame strictly once
     if (lastHighlightedRow == -1)
     {
-        tft.setFont(&Inter_Medium_10pt); // Set our smooth menu font
+        tft.setFont(&Inter_Medium_10pt); 
         tft.drawFastHLine(0, 26, w, ILI9341_DARKGREY);
         tft.setTextColor(ILI9341_WHITE);
-        tft.setCursor(15, 20); // Baseline shifted down from 6
+        tft.setCursor(15, 20); 
         tft.print("SYSTEM INITIALIZATION");
 
         tft.setTextColor(ILI9341_LIGHTGREY);
         tft.setCursor(25, 56);
-        tft.print("Input Source:"); // Baseline shifted down from 42
+        tft.print("Input Source:"); 
         tft.setCursor(25, 91);
-        tft.print("Cell Count:"); // Baseline shifted down from 77
+        tft.print("Cell Count:"); 
         tft.setCursor(25, 126);
-        tft.print("Servo Range:"); // Baseline shifted down from 112
+        tft.print("Servo Range:"); 
         tft.setCursor(25, 161);
-        tft.print("Output Mode:"); // Baseline shifted down from 147
+        tft.print("Output Mode:"); 
 
         tft.drawRoundRect(40, 184, w - 80, 32, 16, ILI9341_GREEN);
-        tft.setCursor((w / 2) - 34, 206); // Adjusted for smooth font geometry
+        tft.setCursor((w / 2) - 34, 206); 
         tft.setTextColor(ILI9341_GREEN);
         tft.print("START");
     }
@@ -97,7 +97,7 @@ void DisplayManager::updateMenu(int highlightedRow, int inputType, int cellCount
     if (inputType != lastInputType)
     {
         tft.fillRect(185, 38, 110, 22, ILI9341_BLACK);
-        tft.setCursor(185, 56); // Adjusted baseline
+        tft.setCursor(185, 56); 
         switch (inputType)
         {
         case 0:
@@ -261,7 +261,7 @@ void DisplayManager::updateTestSelectionMenu(int highlightedRow)
                 tft.drawRoundRect(20, targetY, w - 40, 34, 6, ILI9341_DARKGREY);
                 tft.setTextColor(ILI9341_LIGHTGREY);
             }
-            tft.setCursor(35, targetY + 24); // Aligned to sit perfectly in the center of the box
+            tft.setCursor(35, targetY + 24); 
             tft.print(testList[i]);
         }
         lastTestSelectionRow = highlightedRow;
@@ -288,7 +288,8 @@ void DisplayManager::updateTestSelectionMenu(int highlightedRow)
     }
 }
 
-void DisplayManager::drawStaticTestLayout(int servoRange, int systemState)
+// MODIFIED: Added currentMode parameter to handle initial layout toggle text
+void DisplayManager::drawStaticTestLayout(int servoRange, int systemState, int currentMode)
 {
     int w = tft.width();
     int h = tft.height();
@@ -313,18 +314,43 @@ void DisplayManager::drawStaticTestLayout(int servoRange, int systemState)
     int footerLineY = h * 0.88;
     tft.drawFastHLine(0, footerLineY, w, ILI9341_DARKGREY);
 
-    tft.setTextColor(ILI9341_WHITE);
-    int slotWidth = w / 3;
-    int footerTextY = 233; // Shifted baseline for button texts near bottom edge
+    if (systemState != 3)
+    {
+        tft.setTextColor(ILI9341_WHITE);
+        int slotWidth = w / 3;
+        int footerTextY = 233; 
 
-    tft.setCursor((slotWidth * 0) + (slotWidth / 2) - 25, footerTextY);
-    tft.print("BTN 1");
-    tft.setCursor((slotWidth * 1) + (slotWidth / 2) - 25, footerTextY);
-    tft.print("BTN 2");
-    tft.setCursor((slotWidth * 2) + (slotWidth / 2) - 25, footerTextY);
-    tft.print("BTN 3");
+        // Default layout tags
+        const char* labels[] = {"LEFT", "CENTER", "RIGHT"};
+        
+        if (systemState == 4) 
+        {
+            labels[0] = "SLOW";
+            labels[1] = "MID";
+            labels[2] = "FAST";
+        }
+        // MODIFIED: Configured custom labels and initial toggle string for STAMPS test
+        else if (systemState == 5)
+        {
+            labels[0] = "CAPTURE";
+            labels[1] = "MOVE";
+            labels[2] = (currentMode % 2 == 0) ? "START" : "STOP";
+        }
 
-    // Locked percent location setup (Stays at X = 175)
+        for (int i = 0; i < 3; i++)
+        {
+            int16_t x1, y1;
+            uint16_t w_str, h_str;
+            tft.getTextBounds(labels[i], 0, 0, &x1, &y1, &w_str, &h_str);
+            
+            int slotCenter = (slotWidth * i) + (slotWidth / 2);
+            int dynamicLabelX = slotCenter - (w_str / 2) - x1;
+            
+            tft.setCursor(dynamicLabelX, footerTextY);
+            tft.print(labels[i]);
+        }
+    }
+
     tft.setFont(&Inter_Medium_22pt);
     tft.setTextColor(testAccentColor);
     tft.setCursor((w / 2) + 15, 80); 
@@ -349,7 +375,8 @@ void DisplayManager::updateTestScreen(int encoderValue, int currentMode, float b
 {
     if (lastPercent == -1)
     {
-        drawStaticTestLayout(servoRange, systemState);
+        // MODIFIED: Passed currentMode down to layout generator
+        drawStaticTestLayout(servoRange, systemState, currentMode);
     }
 
     int w = tft.width();
@@ -362,7 +389,7 @@ void DisplayManager::updateTestScreen(int encoderValue, int currentMode, float b
         tft.fillRect(w - 15 - 75, 4, 80, 20, ILI9341_BLACK);
 
         tft.setTextColor(ILI9341_LIGHTGREY);
-        tft.setCursor(w - 15 - 65, 20); // Corrected top-right baseline metrics
+        tft.setCursor(w - 15 - 65, 20); 
         tft.print(batteryVoltage, 2);
         tft.print("V");
         lastVoltage = batteryVoltage;
@@ -370,22 +397,27 @@ void DisplayManager::updateTestScreen(int encoderValue, int currentMode, float b
 
     if (currentMode != lastMode)
     {
-        tft.setFont(NULL);
-        tft.setTextSize(1);
-        tft.fillRect(230, 33, 85, 12, ILI9341_BLACK);
-        tft.setCursor(230, 35);
-        switch (currentMode)
+        // MODIFIED: Safely swap the third button header between START/STOP when mode shifts during STAMPS test
+        if (systemState == 5 && lastMode != -1)
         {
-        case 0:
-            break;
-        case 1:
-            tft.setTextColor(ILI9341_BLUE); 
-            tft.print("[CENTER]");
-            break;
-        case 2:
-            tft.setTextColor(ILI9341_YELLOW);
-            tft.print("[SWEEP]");
-            break;
+            tft.setFont(&Inter_Medium_10pt);
+            int slotWidth = w / 3;
+            int footerTextY = 233;
+            
+            // Wipe the old text area within the 3rd button boundaries
+            tft.fillRect(slotWidth * 2, footerTextY - 15, slotWidth, 22, ILI9341_BLACK);
+            
+            const char* toggleLabel = (currentMode % 2 == 0) ? "START" : "STOP";
+            int16_t x1, y1;
+            uint16_t w_str, h_str;
+            tft.getTextBounds(toggleLabel, 0, 0, &x1, &y1, &w_str, &h_str);
+            
+            int slotCenter = (slotWidth * 2) + (slotWidth / 2);
+            int dynamicLabelX = slotCenter - (w_str / 2) - x1;
+            
+            tft.setCursor(dynamicLabelX, footerTextY);
+            tft.setTextColor(ILI9341_WHITE);
+            tft.print(toggleLabel);
         }
         lastMode = currentMode;
     }
@@ -397,23 +429,17 @@ void DisplayManager::updateTestScreen(int encoderValue, int currentMode, float b
         char numStr[4];
         itoa(encoderValue, numStr, 10);
 
-        // STRATEGY UPDATE: Measure the EXACT pixel bounds of this specific string context dynamically
         int16_t x1, y1;
         uint16_t w_str, h_str;
         tft.getTextBounds(numStr, 0, 0, &x1, &y1, &w_str, &h_str);
 
-        // LOCK BOUNDARIES: Force the number's right-edge to sit exactly at X = 170
-        // This keeps a beautiful, fixed 5-pixel visual padding gap before the '%' at 175
         const int targetRightX = (w / 2) + 10; 
         int dynamicNumX = targetRightX - (x1 + w_str);
 
-        // CLEARING SYSTEM: Erase perfectly up to targetRightX + 1 (X = 171).
-        // Since numbers NEVER cross 170, they are 100% erased. Since it stops at 171, the '%' at 175 is untouched.
         int clearLeft = (w / 2) - 80;
         int clearWidth = (targetRightX + 1) - clearLeft;
         tft.fillRect(clearLeft, 40, clearWidth, 45, ILI9341_BLACK);
 
-        // Print the perfectly right-aligned number string
         tft.setCursor(dynamicNumX, 80); 
         tft.setTextColor(testAccentColor);
         tft.print(numStr);

@@ -1,4 +1,5 @@
 #include <Servo.h>
+#include <Encoder.h>
 #include "Button.h"
 #include "BatteryMonitor.h"
 #include "ServoController.h"
@@ -6,8 +7,8 @@
 
 #define DEBUG_TELEMETRY 1 
 
-#define ENCODER_CLK_PIN 2
-#define ENCODER_DT_PIN 3
+#define ENCODER_CLK_PIN 3
+#define ENCODER_DT_PIN 2
 #define ENCODER_SW_PIN A0
 #define BUTTON_1_PIN A1
 #define BUTTON_2_PIN A2
@@ -31,6 +32,9 @@ ServoController myServo1(SERVO_1_PIN, 540, 2200);
 ServoController myServo2(SERVO_2_PIN, 540, 2200);
 DisplayManager display(TFT_CS, TFT_DC, TFT_RST, TFT_BL);
 
+Encoder myHardwareEnc(ENCODER_CLK_PIN, ENCODER_DT_PIN);
+long lastNormalizedPos = 0;
+
 enum SystemState { INIT_MENU, TEST_SELECTION_MENU, MANUAL_POSITION, NEUTRAL_POSITION, VELOCITY_TEST, STAMPS };
 SystemState currentSystemState = INIT_MENU;
 
@@ -44,8 +48,6 @@ int configOutputCount = 1;
 const int ENCODER_STEP = 2;
 int encoderValue = 50;    
 int currentGlobalMode = 0;
-
-volatile int encoderDelta = 0; 
 
 static float sweepValue = 0.0;
 static int sweepDirection = 1;
@@ -63,33 +65,25 @@ void setup()
   encoderSwitch.init();
   display.init();
 
-  pinMode(ENCODER_CLK_PIN, INPUT_PULLUP);
-  pinMode(ENCODER_DT_PIN, INPUT_PULLUP);
   pinMode(BUZZER_PIN, OUTPUT);
-
-  attachInterrupt(digitalPinToInterrupt(ENCODER_CLK_PIN), readEncoder, CHANGE);
 }
 
 void loop()
 {
   battery.update();
 
-  noInterrupts();
-  int delta = encoderDelta;
-  encoderDelta = 0; 
-  interrupts();
+  long currentNormalizedPos = myHardwareEnc.read() / 4; 
+  int delta = currentNormalizedPos - lastNormalizedPos;
+  lastNormalizedPos = currentNormalizedPos;
 
   if (currentSystemState == INIT_MENU) 
   {
-    // The menu layout grid is now permanently locked to 4 setting options + button (Max index 4)
     if (delta != 0) {
       if (delta > 0) {
         activeMenuRow++;
-        // SMART SKIP: If power supply is active, jump straight over Cell Count to Servo Range
         if (configInputType == 0 && activeMenuRow == 1) activeMenuRow = 2;
       } else {
         activeMenuRow--;
-        // SMART SKIP: If power supply is active, jump straight up past Cell Count to Input Source
         if (configInputType == 0 && activeMenuRow == 1) activeMenuRow = 0;
       }
       if (activeMenuRow > 4) activeMenuRow = 4;
@@ -125,7 +119,7 @@ void loop()
         configOutputCount = !configOutputCount;
         beep();
       }
-      else if (activeMenuRow == 4) { // Executing test from locked row index 4
+      else if (activeMenuRow == 4) { 
         beep(); delay(60); beep();
         
         if (configServoRange == 0) {
@@ -210,31 +204,31 @@ void loop()
     else {
       if (buttonActive) {
         buttonActive = false;
-        if (!longPressTriggered) {
-          if (currentSystemState == MANUAL_POSITION || currentSystemState == STAMPS) {
-            encoderValue = 50;
-            beep();
-          } else if (currentSystemState == VELOCITY_TEST) {
-            encoderValue = 0; 
-            beep();
-          }
-        }
       }
     }
 
     int servoOutputValue = 50;
 
-    if (currentSystemState == MANUAL_POSITION || currentSystemState == STAMPS) 
+    if (currentSystemState == MANUAL_POSITION) 
     {
       if (delta != 0) encoderValue += (delta * ENCODER_STEP);
       if (encoderValue > 100) encoderValue = 100;
       if (encoderValue < 0)   encoderValue = 0;
 
-      if (button1.isPressed()) { encoderValue = 0; beep(); }
-      if (button2.isPressed()) { encoderValue = 100; beep(); }
+      if (button1.isPressed()) { encoderValue = 0; beep(); }   // LEFT
+      if (button2.isPressed()) { encoderValue = 50; beep(); }  // CENTER
+      if (button3.isPressed()) { encoderValue = 100; beep(); } // RIGHT
       
       servoOutputValue = encoderValue;
     } 
+    else if (currentSystemState == STAMPS)
+    {
+      if (delta != 0) encoderValue += (delta * ENCODER_STEP);
+      if (encoderValue > 100) encoderValue = 100;
+      if (encoderValue < 0)   encoderValue = 0;
+      
+      servoOutputValue = encoderValue;
+    }
     else if (currentSystemState == NEUTRAL_POSITION) 
     {
       encoderValue = 50; 
@@ -246,8 +240,9 @@ void loop()
       if (encoderValue > 100) encoderValue = 100;
       if (encoderValue < 0)   encoderValue = 0;
 
-      if (button1.isPressed()) { encoderValue = 0; beep(); }   
-      if (button2.isPressed()) { encoderValue = 100; beep(); } 
+      if (button1.isPressed()) { encoderValue = 15; beep(); }   // SLOW Sweep Speed (15%)
+      if (button2.isPressed()) { encoderValue = 50; beep(); }   // MID Sweep Speed (50%)
+      if (button3.isPressed()) { encoderValue = 100; beep(); }  // FAST Sweep Speed (100%)
 
       if (encoderValue > 0) {
         if (millis() - lastSweepTick >= 15) {
@@ -265,12 +260,21 @@ void loop()
       servoOutputValue = (int)sweepValue;
     }
 
+    // MODIFIED: Restructured Button 3 handling logic to intercept presses during STAMPS mode
     if (button3.isPressed()) {
-      currentGlobalMode++;
-      if (currentGlobalMode > 2) currentGlobalMode = 0;
-      myServo1.setMode(currentGlobalMode);
-      if (configOutputCount == 1) myServo2.setMode(currentGlobalMode);
-      beep(); delay(50); beep();
+      if (currentSystemState == STAMPS) {
+        // Toggle mode strictly between 0 and 1 to flip the visual header text state cleanly
+        currentGlobalMode = (currentGlobalMode == 0) ? 1 : 0;
+        beep();
+      }
+      else if (currentSystemState != MANUAL_POSITION && currentSystemState != VELOCITY_TEST) {
+        // Run standard operating logic for non-excluded test modes
+        currentGlobalMode++;
+        if (currentGlobalMode > 2) currentGlobalMode = 0;
+        myServo1.setMode(currentGlobalMode);
+        if (configOutputCount == 1) myServo2.setMode(currentGlobalMode);
+        beep(); delay(50); beep();
+      }
     }
 
     myServo1.update(servoOutputValue);
@@ -303,18 +307,4 @@ void printTelemetry()
     Serial.print(" | E: ");
     Serial.println(encoderValue);
   #endif
-}
-
-void readEncoder()
-{
-  int clkState = digitalRead(ENCODER_CLK_PIN);
-  int dtState = digitalRead(ENCODER_DT_PIN);
-  static int lastClkState = HIGH;
-
-  if (clkState != lastClkState && clkState == LOW)
-  {
-    if (dtState != clkState) { encoderDelta++; }
-    else                     { encoderDelta--; }
-  }
-  lastClkState = clkState;
 }

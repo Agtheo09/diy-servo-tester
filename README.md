@@ -3,9 +3,13 @@
 # Ultimate Servo Tester V3 🛠️🚀
 
 [![Open Source](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg)](https://opensource.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PCB Size](https://img.shields.io/badge/PCB%20Size-sub--80mm-blue.svg)]()
-[![Cost](https://img.shields.io/badge/Cost-Sub--%E2%82%AC40-orange.svg)]()
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Platform](https://img.shields.io/badge/Platform-Arduino%20Nano-00979D?logo=arduino&logoColor=white)]()
+[![Hardware](https://img.shields.io/badge/Hardware-Open%20Source%20PCB-blue)]()
+[![PCB](https://img.shields.io/badge/PCB-Sub--80mm-purple)]()
+[![Cost](https://img.shields.io/badge/BOM%20Cost-%3C%20%E2%82%AC40-orange)]()
+[![Firmware](https://img.shields.io/badge/Firmware-C%2B%2B%20%2F%20Arduino-red)]()
+[![Status](https://img.shields.io/badge/Status-Active%20Development-success)]()
 
 </div>
 
